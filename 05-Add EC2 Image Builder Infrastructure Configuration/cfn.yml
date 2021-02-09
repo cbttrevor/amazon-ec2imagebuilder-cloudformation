@@ -1,0 +1,56 @@
+Resources:
+  TrevorInfraConfigNGINX:
+    Type: AWS::ImageBuilder::InfrastructureConfiguration
+    Properties: 
+      Description: 'This provides a build environment for NGINX on Ubuntu Linux'
+      InstanceProfileName: CBTNuggetsInstanceProfile
+      InstanceTypes: 
+        - t3.medium
+      Name: TrevorUbuntuNGINXInfraConfig
+      SecurityGroupIds: 
+        - sg-f2cdb7a3
+      SubnetId: subnet-c0fd07b8
+      Tags: 
+        User: 'Trevor Sullivan'
+  TrevorDistSettingsNGINX:
+    Type: AWS::ImageBuilder::DistributionConfiguration
+    Properties: 
+      Description: String
+      Distributions: 
+        - AmiDistributionConfiguration:
+            Name: 'trevorcfnubuntunginx - {{ imagebuilder:buildDate }}'
+            Description: 'This build was initiated from CloudFormation'
+          Region: us-west-1
+      Name: TrevorDistSettingsNGINX
+      Tags: 
+        User: 'Trevor Sullivan'
+  TrevorNGINXRecipe:
+    Type: AWS::ImageBuilder::ImageRecipe
+    Properties: 
+      Components: 
+        - ComponentArn: !Ref NGINXBuildComponent
+      Description: 'Builds an Ubuntu Linux 20.04 LTS image with NGINX'
+      Name: TrevorNGINXBuild
+      ParentImage: ami-0928f4202481dfdf6
+      Tags: 
+        User: 'Trevor Sullivan'
+      Version: 2.1.0
+  NGINXBuildComponent:
+    Type: AWS::ImageBuilder::Component
+    Properties: 
+      Data: |
+        schemaVersion: 1.0
+        phases:
+          - name: build
+            steps:
+              - name: InstallNGINX
+                action: ExecuteBash
+                inputs:
+                  commands:
+                    - apt-get update && apt-get upgrade --yes
+                    - apt-get install nginx --yes
+      Name: UbuntuNGINX
+      Platform: Linux
+      Tags: 
+        User: 'Trevor Sullivan'
+      Version: 1.2.0

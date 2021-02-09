@@ -1,0 +1,1 @@
+Update-CFNStack -StackName Trevor -TemplateBody (Get-Content -Path $PSScriptRoot/cfn.yml -Raw)
